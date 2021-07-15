@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <iostream>
+#include <string.h>
+using namespace std;
+ 
+#define n  4
+ 
+// this function states that whether women prefer m1 or M1orM2
+//if women prefer m over m1 then returns false
+bool M1orM2(int preferedlist[2*n][n], int w, int m, int m1)
+{
+    
+    for (int i = 0; i < n; i++)
+    {
+        
+        if (preferedlist[w][i] == m1)
+            return true;
+ 
+        if (preferedlist[w][i] == m)
+           return false;
+           
+    }
+}
+ 
+void Match(int preferedlist[2*n][n])
+{
+    // value of matching[i] indicates the matching with women n+i
+    int matching[n];
+    // if man 1 is free then mFree[i] is false
+    bool mFree[n];
+    // set all men and women as free
+    memset(matching, -1, sizeof(matching));
+    memset(mFree, false, sizeof(mFree));
+    int freeCount = n;
+ 
+    while (freeCount > 0)
+    {
+        // pick first man who is free lest say m
+        int m;
+        for (m = 0; m < n; m++)
+            if (mFree[m] == false)
+                break;
+        // go to m's preferance list
+        for (int i = 0; i < n && mFree[m] == false; i++)
+        {
+            int w = preferedlist[m][i];
+ 
+            // if women w is not engaged then w and m become a match
+            if (matching[w-n] == -1)
+            {
+                matching[w-n] = m;
+                mFree[m] = true;
+                freeCount--;
+            }
+ 
+            else  
+            {
+                // if w is not free then check for current w's match
+                // let say m1 is w's current match
+                int m1 = matching[w-n];
+ 
+                //if w prefer m over m1 then w and m become match
+                if (M1orM2(preferedlist, w, m, m1) == false)
+                {
+                    matching[w-n] = m;
+                    mFree[m] = true;
+                    mFree[m1] = false;
+                }
+            } 
+        } 
+    } 
+    // print the matching
+    cout << "Woman   Man" << endl;
+    for (int i = 0; i < n; i++)
+       cout << " " << i+n << "\t" << matching[i] << endl;
+}
+// Lets say their is 4 men(aditya(0),prakarsh(1),akshit(2),virendra(3)) and 4 women (samantha(4),pooja(5),preeti(6),disha(7))
+// we indicate each with a particular number as shown in bracket
+// each one has preferance list e.g, aditya has preference list (preeti,samantha,disha,pooja) 
+// so aditya preference we indicate as (6, 4, 7, 5) similarly so others
+int main()
+{
+    int preferedlist[2*n][n] = { 
+        {6, 5, 7, 4},
+        {5, 7, 6, 4},
+        {4, 7, 6, 5},
+        {7, 6, 5, 4},
+        {3, 2, 1, 0},
+        {2, 3, 1, 0},
+        {1, 0, 3, 2},
+        {0, 2, 3, 1},
+    };
+    Match(preferedlist);
+ 
+    return 0;
+}
