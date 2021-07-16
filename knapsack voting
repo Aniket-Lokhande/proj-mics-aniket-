@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <bits/stdc++.h>
+using namespace std;
+
+int N=7;
+int main()
+{
+    int Projvalue[] = {4, 5, 7, 0, 6, 0, 8};
+    int Projcost[] = {1000 , 2000, 2500, 500, 5000, 1500, 4000};
+    int Budget = 7000;
+    
+    int dp[N+1][Budget+1];
+    for(int i=0;i<=N;i++)
+    {
+        for(int j=0;j<=Budget;j++)
+        {
+            if(i==0||j==0)
+            dp[i][j]=0;
+            else if(Projcost[i-1]>j||Projvalue[i-1]==0)
+            {
+                dp[i][j] = dp[i-1][j];
+            }
+            else 
+            dp[i][j] = max(dp[i-1][j],dp[i-1][j-Projcost[i-1]]+Projvalue[i-1]);
+        }
+    }
+    vector<int> vect;
+    int Maxprojval = dp[N][Budget];
+    int j=Budget;
+    for(int i=N;i>0&&Maxprojval>0;i--)
+    {
+        if(Maxprojval==dp[i-1][j])
+        continue;
+        else
+        {
+            vect.push_back(i);
+            Maxprojval = Maxprojval - Projvalue[i-1];
+            j = j-Projcost[i-1];
+        }
+    }
+    for(int i=0;i<vect.size();i++)
+    cout<<vect[i]<<" "<<Projvalue[vect[i]-1]<<endl;
+    cout<<endl<<dp[N][Budget];
+    return 0;
+}
